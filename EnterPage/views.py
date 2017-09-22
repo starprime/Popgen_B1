@@ -12,14 +12,18 @@ from django.http import HttpResponse
 
 def index(request):
     all_jobs=Job.objects.all()
-    template=loader.get_template('')
+    template=loader.get_template('EnterPage/index.html')
+    context = {
+        'all_jobs':all_jobs,
+    }
+
     '''html=''
     for job in all_jobs:
         url='/enterpage/'+str(job.id)+'/'
         html+='<a href="'+url+'">'+job.job_name+'</a><br>'
     return HttpResponse(html)
     '''
-    return HttpResponse('')
+    return HttpResponse(template.render(context,request))
 
 def job_details(request,job_id):
     return HttpResponse("<h1> details of the job "+str(job_id)+"<h1>")
