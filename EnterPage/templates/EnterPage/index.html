@@ -1,0 +1,12 @@
+{% if all_jobs %}
+    <h3>Here all your jobs</h3>
+    <ul>
+        {% for job in all_jobs %}
+        <li>
+            <a href="/enterpage/{{job.id}}/">{{ job.job_name }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <h3>You dont have any jobs</h3>
+{% endif %}
