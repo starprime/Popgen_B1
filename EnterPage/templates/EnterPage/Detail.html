@@ -1,0 +1,11 @@
+<h1>{{ user.username }}</h1>
+
+<h2>Here all your Jobs</h2>
+
+<ul>
+    {% for job in user.job_set.all %}
+    <li>
+        {{ job.job_name }} - {{ job.job_priority }}
+    </li>
+    {% endfor %}
+</ul>
