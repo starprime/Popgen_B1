@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-from .models import Job
-from django.template import loader
 
+from django.http import Http404
+from .models import Job,User
 from django.shortcuts import render
+#from django.template import loader
+
+from django.shortcuts import render,get_object_or_404
 
 # Create your views here.
 from django.http import HttpResponse
@@ -11,11 +13,10 @@ from django.http import HttpResponse
 ## should have minimal HTML code inside Python
 
 def index(request):
-    all_jobs=Job.objects.all()
-    template=loader.get_template('EnterPage/index.html')
-    context = {
-        'all_jobs':all_jobs,
-    }
+    all_user=User.objects.all()
+    #template=loader.get_template('EnterPage/index.html')
+    print all_user
+    context = {'all_user':all_user}
 
     '''html=''
     for job in all_jobs:
@@ -23,7 +24,14 @@ def index(request):
         html+='<a href="'+url+'">'+job.job_name+'</a><br>'
     return HttpResponse(html)
     '''
-    return HttpResponse(template.render(context,request))
+    #return HttpResponse(template.render(context,request))
+    return render(request,'EnterPage/index.html',context)
 
-def job_details(request,job_id):
-    return HttpResponse("<h1> details of the job "+str(job_id)+"<h1>")
+def user_details(request,user_id):
+    '''try:
+        user=User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        raise Http404("User does not exsist")
+    '''
+    user=get_object_or_404(User,pk=user_id)
+    return render(request,'EnterPage/Detail.html',{'user':user})
