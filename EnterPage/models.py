@@ -17,6 +17,7 @@ class Job(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)
     job_priority=models.CharField(max_length=5)
     job_name=models.CharField(max_length=50)
+    is_fav=models.BooleanField(default=False)
 
     def __str__(self):
         return self.job_name
