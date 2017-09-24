@@ -1,12 +1,15 @@
 from django.conf.urls import url
 from . import views
 
+app_name='EnterPage'
+
 urlpatterns = [
     #/EnterPage/
     url(r'^$',views.index,name='index'),
 
     #EnterPage/13/
-    url(r'^(?P<job_id>[0-9]+)/$',views.job_details,name='job_details'),
+    #EnterPage/job_id
+    url(r'^(?P<user_id>[0-9]+)/$',views.user_details,name='user_details'),
 
     #
 ]
