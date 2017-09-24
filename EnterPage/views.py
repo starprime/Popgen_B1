@@ -27,6 +27,7 @@ def index(request):
     #return HttpResponse(template.render(context,request))
     return render(request,'EnterPage/index.html',context)
 
+
 def user_details(request,user_id):
     '''try:
         user=User.objects.get(pk=user_id)
@@ -35,3 +36,19 @@ def user_details(request,user_id):
     '''
     user=get_object_or_404(User,pk=user_id)
     return render(request,'EnterPage/Detail.html',{'user':user})
+
+def favorite(request,user_id):
+    user=get_object_or_404(User,pk=user_id)
+    try:
+        fav_job=user.job_set.get(pk=request.POST['job'])
+        print fav_job
+    except(KeyError,Job.DoesNotExist):
+        return render(request, 'EnterPage/Detail.html', {
+            'user': user,
+            'error_message':"Not a valid Job",
+        })
+    else:
+        print fav_job,'is true'
+        fav_job.is_fav = True
+        fav_job.save()
+        return render(request, 'EnterPage/Detail.html', {'user': user})

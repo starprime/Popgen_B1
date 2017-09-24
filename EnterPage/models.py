@@ -23,4 +23,6 @@ class Job(models.Model):
         return self.job_name
 
         ##pronblem here
+        ##python manage.py makemigrations EnterPage
+
 #  Django Tutorial for Beginners - 17 - Adding Songs to our Database
