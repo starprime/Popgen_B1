@@ -1,25 +1,27 @@
-<h1>{{ user.username }}</h1>
 
-<h2>Here all your Jobs</h2>
+{% extends 'EnterPage/base.html' %}
+{% block title %}User Job Details{% endblock %}
+{% block body %}
+    <h1>{{ user.username }}</h1>
 
-{% if error_msg %}
-    <p><strong>{{ error_msg }}</strong></p>
-{% endif %}
+    <h2>Here all your Jobs</h2>
+
+    {% if error_msg %}
+        <p><strong>{{ error_msg }}</strong></p>
+    {% endif %}
 
 
-<form action="{% url 'EnterPage:favorite' user.id %}" method="post">
-    {% csrf_token %}
-    {% for job in user.job_set.all %}
-        <input type="radio" id="job{{ forloop.counter }}" name="job" value="{{ job.id }}"/>
-        <label for="job{{ forloop.counter }}">
+        {% for job in user.job_set.all %}
+            <li>
             {{ job.job_name }}
             {% if job.is_fav %}
                 <img src="http://i.imgur.com/b9b13Rd.png"/>
             {% endif %}
-        </label><br>
-    {% endfor %}
-    <input type="Submit" value="Favorite">
-</form>
+            <br>
+            </li>
+        {% endfor %}
+
+{% endblock %}
 
 <!--
 <ul>{% comment %}
