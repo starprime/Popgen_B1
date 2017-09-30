@@ -38,7 +38,7 @@ class UserDelete(UpdateView):
 ## post request to submit the form
 class UserFormView(View):
     form_class=UserForm
-    template_name='enterpage/registration_form.html'
+    template_name='EnterPage/registration_form.html'
 
     #display blank form
     def get(self,request):
