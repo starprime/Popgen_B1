@@ -26,3 +26,6 @@ urlpatterns = [
     url(r'^register/$', views.UserFormView.as_view(), name='register'),
 
 ]
+
+## rest api can be accessed by all device
+
