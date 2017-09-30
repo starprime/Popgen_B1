@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 from django.db import models
+
+from django.core.urlresolvers import reverse,reverse_lazy
+
 
 # Create your models here.
 
@@ -9,6 +11,9 @@ class User(models.Model):
     username=models.CharField(max_length=50)
     email=models.CharField(max_length=50)
     password=models.CharField(max_length=50)
+
+    def get_absolute_url(self):
+        return reverse('EnterPage:user_details', kwargs={'pk':self.pk})
 
     def __str__(self):
         return self.username

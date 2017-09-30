@@ -1,54 +1,75 @@
-# -*- coding: utf-8 -*-
+from django.views import generic
+from django.views.generic import View
+from .forms import UserForm
+from .models import User
 
-from django.http import Http404
-from .models import Job,User
-from django.shortcuts import render
-#from django.template import loader
+#for update
+from django.views.generic.edit import CreateView,UpdateView,DeleteView
+from django.core.urlresolvers import reverse_lazy
 
-from django.shortcuts import render,get_object_or_404
-
-# Create your views here.
-from django.http import HttpResponse
-
-## should have minimal HTML code inside Python
-
-def index(request):
-    all_user=User.objects.all()
-    #template=loader.get_template('EnterPage/index.html')
-    print all_user
-    context = {'all_user':all_user}
-
-    '''html=''
-    for job in all_jobs:
-        url='/enterpage/'+str(job.id)+'/'
-        html+='<a href="'+url+'">'+job.job_name+'</a><br>'
-    return HttpResponse(html)
-    '''
-    #return HttpResponse(template.render(context,request))
-    return render(request,'EnterPage/index.html',context)
+##for user
+from django.shortcuts import render,redirect
+from django.contrib.auth import authenticate,login
 
 
-def user_details(request,user_id):
-    '''try:
-        user=User.objects.get(pk=user_id)
-    except User.DoesNotExist:
-        raise Http404("User does not exsist")
-    '''
-    user=get_object_or_404(User,pk=user_id)
-    return render(request,'EnterPage/Detail.html',{'user':user})
+class IndexView(generic.ListView):
+    template_name = 'EnterPage/index.html'
 
-def favorite(request,user_id):
-    user=get_object_or_404(User,pk=user_id)
-    try:
-        fav_job=user.job_set.get(pk=request.POST['job'])
-        print fav_job
-    except(KeyError,Job.DoesNotExist):
-        return render(request, 'EnterPage/Detail.html', {
-            'user': user,
-            'error_message':"Not a valid Job",
-        })
-    else:
-        print fav_job,'is true'
-        fav_job.is_fav = True
-        fav_job.save()
-        return render(request, 'EnterPage/Detail.html', {'user': user})
+    def get_queryset(self):
+        return User.objects.all()
+
+class DetailsView(generic.DetailView):
+    model = User
+    template_name = 'EnterPage/Detail.html'
+
+class UserCreate(CreateView):
+    model = User
+    fields = ['username','email','password']
+
+class UserUpdate(UpdateView):
+    model = User
+    fields = ['username','email','password']
+
+class UserDelete(UpdateView):
+    model = User
+    success_url = reverse_lazy('EnterPage:index')
+
+## get request for the first time
+## post request to submit the form
+class UserFormView(View):
+    form_class=UserForm
+    template_name='enterpage/registration_form.html'
+
+    #display blank form
+    def get(self,request):
+        form=self.form_class(None)
+        return render(request,self.template_name,{'form':form})
+
+    # process form data
+    def post(self,request):
+        form=self.form_class(request.POST)
+
+        if form.is_valid():
+
+            user=form.save(commit=False)
+            # clean ,normalize the data
+            username=form.cleaned_data['username']
+            password=form.cleaned_data['password']
+            user.set_password(password)
+            user.save()
+
+            # return User Objects if cred are correct
+
+            user=authenticate(username=username,password=password)
+
+            if user is not None:
+                if user.is_active:
+                    login(request,user)
+                    return redirect('EnterPage:index')
+
+        return render(request,self.template_name,{'form':form})
+
+
+
+
+
