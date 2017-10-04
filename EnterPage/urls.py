@@ -25,6 +25,8 @@ urlpatterns = [
 
     url(r'^register/$', views.UserFormView.as_view(), name='register'),
 
+    url(r'^job-register/$', views.CreateJob.as_view(), name='CreateJob'),
+
 ]
 
 ## rest api can be accessed by all device
