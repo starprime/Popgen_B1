@@ -1,0 +1,145 @@
+PopGen Webapp notes and code
+
+instead of bootstrap at index.html
+<!--load path to static file
+<ul>{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'job_enter/style.css' %}">
+</ul>
+-->
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<!-- header-->
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#topNavBar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'EnterPage:index' %}">Popgen</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="topNavBar">
+            <ul class="nav navbar-nav">
+                <li class="">
+                <a href="{% url 'EnterPage:index' %}">
+                    <span class="glyphicon glyphicon-cd" aria-hidden="true"></span>&nbsp;
+                    Jobs
+                </a>
+                </li>
+            </ul>
+            <form class="navbar-form navbar-left" role="search" method="get" action="#">
+                <div class="form-group">
+                    <input type="text" class="form-control" name="q" value="">
+                </div>
+                <button type="submit" class="btn btn-default">Search</button>
+            </form>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li class="">
+                    <a href="{% url 'EnterPage:index' %}">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;
+                        Add
+                    </a>
+                </li>
+                <li class="">
+                    <a href="{% url 'EnterPage:index' %}">
+                        <span class="glyphicon glyphicon-off" aria-hidden="true"></span>&nbsp;
+                        Logout
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+Views.py
+# -*- coding: utf-8 -*-
+'''
+from django.http import Http404
+from .models import Job,User
+from django.shortcuts import render
+#from django.template import loader
+
+from django.shortcuts import render,get_object_or_404
+
+# Create your views here.
+from django.http import HttpResponse
+
+## should have minimal HTML code inside Python
+
+def index(request):
+    all_user=User.objects.all()
+    #template=loader.get_template('EnterPage/index.html')
+    context = {'all_user':all_user}
+
+    '''
+    for job in all_jobs:
+        url='/enterpage/'+str(job.id)+'/'
+        html+='<a href="'+url+'">'+job.job_name+'</a><br>'
+    return HttpResponse(html)
+    '''
+    #return HttpResponse(template.render(context,request))
+    return render(request,'EnterPage/index.html',context)
+
+
+def user_details(request,user_id):
+    '''try:
+        user=User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        raise Http404("User does not exsist") 
+    '''
+    user=get_object_or_404(User,pk=user_id)
+    return render(request,'EnterPage/Detail.html',{'user':user})
+
+def favorite(request,user_id):
+    user=get_object_or_404(User,pk=user_id)
+    try:
+        fav_job=user.job_set.get(pk=request.POST['job'])
+    except(KeyError,Job.DoesNotExist):
+        return render(request, 'EnterPage/Detail.html', {
+            'user': user,
+            'error_message':"Not a valid Job",
+        })
+    else:
+        fav_job.is_fav = True
+        fav_job.save()
+        return render(request, 'EnterPage/Detail.html', {'user': user}) 
+'''.
+
+Detail html
+{% extends 'EnterPage/base.html' %}
+{% block title %}User Job Details{% endblock %}
+{% block body %}
+    <h1>{{ user.username }}</h1>
+
+    <h2>Here all your Jobs</h2>
+
+    {% if error_msg %}
+        <p><strong>{{ error_msg }}</strong></p>
+    {% endif %}
+
+
+    <form action="{% url 'EnterPage:favorite' user.id %}" method="post">
+        {% csrf_token %}
+        {% for job in user.job_set.all %}
+            <input type="radio" id="job{{ forloop.counter }}" name="job" value="{{ job.id }}"/>
+            <label for="job{{ forloop.counter }}">
+                {{ job.job_name }}
+                {% if job.is_fav %}
+                    <img src="http://i.imgur.com/b9b13Rd.png"/>
+                {% endif %}
+            </label><br>
+        {% endfor %}
+        <input type="Submit" value="Favorite">
+    </form>
+{% endblock %}
+
+
+
