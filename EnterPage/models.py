@@ -23,6 +23,7 @@ class Job(models.Model):
     job_priority=models.CharField(max_length=5)
     job_name=models.CharField(max_length=50)
     is_fav=models.BooleanField(default=False)
+    file=models.FileField(blank=True,null=True)
 
     def __str__(self):
         return self.job_name
